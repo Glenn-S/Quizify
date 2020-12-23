@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { useAuthState } from './AuthStateProvider';
 import Home from './Home';
@@ -7,24 +6,14 @@ import PrimaryHeader from './PrimaryHeader';
 import PrimaryFooter from './PrimaryFooter';
 import ProtectedRoute from './ProtectedRoute';
 import Login from './Login';
-import { getCookies } from './cookies';
 import Account from './Account';
 import Quizzes from './Quizzes';
 import QuizForm from './QuizForm';
 import Quiz from './Quiz';
 
 const PrimaryLayout = () => {
-  // const history = useHistory();
-  const { authenticated, dispatch } = useAuthState();
+  const { authenticated } = useAuthState();
   
-  useEffect(() => {
-    const user = getCookies();
-    
-    if (user) {
-      dispatch({ type: 'LOGIN', user });
-    }
-  }, [dispatch]);
-
   return (
     <div className="d-flex flex-column min-vh-100">
       <PrimaryHeader />

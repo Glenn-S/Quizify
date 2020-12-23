@@ -1,12 +1,10 @@
 import { useGoogleLogout } from 'react-google-login';
 import { useAuthState } from './AuthStateProvider';
-import { removeCookies } from './cookies';
 
 const LogoutButton = ({ component:Component, children, ...rest }) => {
   const { dispatch } = useAuthState()
 
   const onLogoutSuccess = (res) => {
-    removeCookies();
     dispatch({ type: 'LOGOUT' });
     console.log('Logged out successfully');
   };

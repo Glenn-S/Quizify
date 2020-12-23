@@ -1,22 +1,13 @@
 import { useGoogleLogin } from 'react-google-login';
 import { useAuthState } from './AuthStateProvider';
-import { getCookies, setCookies } from './cookies';
-// import { refreshTokenSetup } from './refreshToken'; 
 
 const LoginButton = ({ children, ...rest }) => {
   const { dispatch } = useAuthState();
 
   const onSuccess = (res) => {
-    const profile = res.profileObj;
-    
-    // create a cookie
-    setCookies(profile);
-    const user = getCookies();
+    dispatch({ type: 'LOGIN', user: res.profileObj });
 
-    // refreshTokenSetup(res);
-    dispatch({ type: 'LOGIN', user });
-
-    console.log(`[Login Success] current user: ${profile.name}`);
+    console.log(`[Login Success] current user: ${res.profileObj.name}`);
   };
 
   const onFailure = (res) => {
