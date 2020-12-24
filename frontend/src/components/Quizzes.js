@@ -14,8 +14,8 @@ const Quizzes = () => {
   useEffect(() => {
     setIsCurrent(true);
 
-    if (user && user.id) {
-      axios.get(`http://localhost:4000/quiz/${user.id}?isGoogleId=true`)
+    if (user && user.googleId) {
+      axios.get(`http://localhost:4000/quiz/${user.googleId}?isGoogleId=true`)
         .then((res) => {
           // give a bit of loading feedback
           if (isCurrent) {
@@ -65,7 +65,7 @@ const Quizzes = () => {
         </div>
       )}
       <br/>
-      <button className='btn btn-primary' onClick={() => history.push('/create-quiz')}>Create Quiz</button>
+      <div className='btn btn-primary' onClick={() => history.push('/create-quiz')}>Create Quiz</div>
     </div>
   );
 };

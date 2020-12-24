@@ -3,22 +3,23 @@ import { useAuthState } from './AuthStateProvider';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import QuestionForm from './QuestionForm';
+import InputField from './InputField';
 
 const QuizForm = () => {
   const { user } = useAuthState();
-  const [name, setName] = useState('');
+  // const [isError, setIsError] = useState({ isError: false, error: {} });
+  const [quizName, setQuizName] = useState('');
   const [submit, setSubmit] = useState(false);
   const [questions, setQuestions] = useState([]); // question: { question, answers, correctAnswer }
   const history = useHistory();
-  
+
   useEffect(() => {
     if (submit) {
-      if (user && user.id) {
-        console.log({ name: name, googleId: user.id, questions: [] });
+      if (user && user.googleId) {
 
         axios.post(
           `http://localhost:4000/quiz`, 
-          { name: name, googleId: user.id, questions: [] },
+          { name: quizName, googleId: user.googleId, questions: questions },
           {
             headers: {
               'Content-Type': 'application/json'
@@ -28,11 +29,12 @@ const QuizForm = () => {
             // give a bit of loading feedback
             console.log(res);
             // redirect?
-            setName('');
+            setQuizName('');
             history.push('/quizzes');
           })
           .catch((reason) => {
             console.log(reason);
+            // setIsError({ isError: true, error: reason });
             // show a failure page
           });
       }
@@ -41,13 +43,18 @@ const QuizForm = () => {
     return () => {
       setSubmit(false);
     };
-  }, [user, name, submit, history]);
+  }, [user, quizName, submit, history, questions]);
 
   const onSubmit = (event) => {
-    console.log('here');
     event.preventDefault();
+    console.log(questions);
+    // TODO validate the data?
     setSubmit(true);
   }
+
+  const onDelete = (index) => setQuestions((prev) => prev.filter((_, i) => i !== index));
+
+  const onUpdate = (index, fn) => setQuestions((prev) => prev.map((x, i) => i === index ? fn(prev[index]) : x));
 
   return (
     <div className='container mt-5'>
@@ -55,25 +62,29 @@ const QuizForm = () => {
         <div className="form-group">
           <h1 className='title'>Create Quiz</h1>
           <hr/>
-          <div className=''>
-            <label htmlFor="quizNameField">Quiz Title: </label>
-            <input 
-              type="text" 
-              className="form-control" 
-              id="quizNameField" 
-              aria-describedby="quizName" 
-              placeholder="Enter Quiz Title"
-              onChange={event => setName(event.target.value)}
-              value={name} 
-            />
-          </div>
+          <InputField 
+            labelText='Quiz Title: ' 
+            placeholder='Enter Quiz Title' 
+            value={quizName} 
+            onChange={setQuizName} 
+          />
 
-          <div>
-            {questions.map((question, i) =>
-              <QuestionForm key={i} index={i} value={question} />
+          <div className=''>
+            {questions.map((question, index) => 
+              <QuestionForm 
+                key={index} 
+                index={index}
+                questionSet={question}
+                onUpdate={onUpdate}
+                onDelete={onDelete}
+              />
             )}
           </div>
-          <div className='btn btn-primary mt-2' onClick={() => setQuestions((prev) => [...prev, 'new item'])}>Add Question</div>
+
+          <div 
+            className='btn btn-primary mt-2' 
+            onClick={() => setQuestions((prev) => [...prev, {question: '', answers: [''], correctAnswer: 0 }])}
+          >Add Question</div>
 
         </div>
         <button type="submit" onClick={(event) => onSubmit(event)} className="btn btn-outline-primary float-right">Publish</button>

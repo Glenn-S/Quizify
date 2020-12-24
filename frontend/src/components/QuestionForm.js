@@ -1,73 +1,71 @@
-import { useState } from 'react';
-import AnswersForm from './AnswerForm';
-import DeleteIcon from '@material-ui/icons/Delete';
+import QuizInputField from './QuizInputField';
 
-const QuestionForm = ({ index, value, onQuestionUpdate, onQuestionDelete }) => {
-  // TODO Figure out how to make this a controlled component from the quiz form 
-  const [question, setQuestion] = useState('');
-  const [answers, setAnswers] = useState(['']); // start with one item
-  const [correctAnswer, setCorrectAnswer] = useState(0);
+const QuestionForm = ({ index, questionSet, onUpdate, onDelete }) => {
 
-  const onUpdate = (value, index) => {
-    setAnswers((prev) => {
-      prev[index] = value;
-      return [...prev];
-    });
+  const onQuestionUpdate = (value) => {
+    onUpdate(index, (prev) => ({...prev, question: value}));
+  }
+
+  const addAnswer = () => {
+    onUpdate(index, (prev) => ({...prev, answers: [...prev.answers, ''] }));
+  }
+
+  const updateCorrectAnswer = (value) => {
+    onUpdate(index, (prev) => ({...prev, correctAnswer: value}));
+  }
+
+  const onAnswerUpdate = (value, i) => {
+    const answers = questionSet.answers;
+    answers[i] = value;
+    onUpdate(index, (prev) => ({...prev, answers: [...answers] }));
   };
 
-  const onDelete = (index) => {
-    setAnswers((prev) => prev.filter((_, i) => i !== index));
+  const onAnswerDelete = (i) => {
+    onUpdate(index, (prev) => ({...prev, answers: prev.answers.filter((_, answerIndex) => answerIndex !== i)}));
   }
 
   return (
     <div className=''>
-      <div className='ml-5'>
-        <hr/>
-        <div className='mb-2'>
-          <div className='form-inline'>
-            <label htmlFor="questionField" className='mr-2'>Question {index + 1}: </label>
-            <textarea 
-              rows={1}
-              cols={60} 
-              className="form-control mr-2" 
-              id="questionField" 
-              aria-describedby="question" 
-              placeholder="Your Question"
-              onChange={event => setQuestion(event.target.value)}
-              value={question} 
-            />
-            <div onClick={(event) => {}} className=''>
-              <DeleteIcon />
-            </div>
-          </div>
+      <hr/>
+      <div className='mb-2'>
+        <QuizInputField 
+          labelText={`Question ${index + 1}: `} 
+          value={questionSet.question}
+          placeholder='Your Question'
+          onChange={(event) => onQuestionUpdate(event.target.value)} 
+          onDelete={() => onDelete(index)} 
+        />
 
-          <div className='btn btn-primary mt-2' onClick={() => setAnswers((prev) => [...prev, ''])}>Add Answer</div>
-
-          <div className='container card mt-2'>
-            <div className='mb-2'>
-              {answers.map((answer, i) => 
-                <AnswersForm 
-                  key={i} 
-                  value={answer} 
-                  index={i} 
-                  onUpdate={onUpdate} 
-                  onDelete={() => onDelete(i)} 
+        <div className='container card mt-2'>
+          <div className='mb-2'>
+            {questionSet.answers.map((answer, index) =>
+              <div key={index} className='mb-2 mt-2'>
+                <QuizInputField 
+                  labelText={`Answer ${index + 1}: `} 
+                  value={answer}
+                  placeholder='Your Answer'
+                  onChange={(event) => onAnswerUpdate(event.target.value, index)} 
+                  onDelete={() => onAnswerDelete(index)} 
                 />
-              )}
-            </div>
-
-            <div className='mb-2 d-flex'>
-              <label htmlFor='answerField'>Correct Answer: </label>
-              <div className='ml-2 select-container'>
-                <select value={correctAnswer} onChange={(event) => setCorrectAnswer(event.target.value)}>
-                  {answers.map((_, i) =>
-                    <option key={i} value={i}>Answer {i+1}</option>
-                  )}
-                </select>
               </div>
+            )}
+          </div>
+
+          <div className='mb-2 d-flex'>
+            <label htmlFor='answerField'>Correct Answer: </label>
+            <div className='ml-2 select-container'>
+              <select value={questionSet.correctAnswer} onChange={(event) => updateCorrectAnswer(Number.parseInt(event.target.value))}>
+                {questionSet.answers.map((_, i) =>
+                  <option key={i} value={i}>Answer {i+1}</option>
+                )}
+              </select>
             </div>
           </div>
+          
+          <div className='btn btn-primary mt-2 mb-2' onClick={addAnswer}>Add Answer</div>
         </div>
+
+
       </div>
     </div>
   );

@@ -2,6 +2,8 @@ import { useAuthState } from './AuthStateProvider';
 
 const Account = () => {
   const { user } = useAuthState();
+
+  // Add in settings for setting a dark mode version
   
   return (
     <div className='container'>
@@ -10,9 +12,9 @@ const Account = () => {
         <div className='card-body d-flex'>
           <img src={user.imageUrl} alt='' className='p-3' />
           <div className='p-2'>
-            <h4 className='card-title'>{user.user}</h4>
+            <h4 className='card-title'>{user.name}</h4>
             <p className='card-text'>{user.email}</p>
-            <p className='card-text'>{user.id}</p>
+            <p className='card-text'>{user.googleId}</p>
           </div>
         </div>
       </div>

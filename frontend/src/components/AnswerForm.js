@@ -1,4 +1,4 @@
-import DeleteIcon from '@material-ui/icons/Delete';
+import QuizInputField from './QuizInputField';
 
 /**
  * Controlled Answer Form component 
@@ -7,7 +7,20 @@ const AnswerForm = ({ index, value, onUpdate, onDelete }) => {
 
   return (
     <div className='mb-2 mt-2'>
-      <div className='form-inline'>
+      <QuizInputField 
+        labelText={`Answer ${index + 1}: `} 
+        value={value}
+        placeholder='Your Answer'
+        onChange={onUpdate} 
+        onDelete={onDelete} />
+    </div>
+  );
+};
+
+export default AnswerForm;
+
+/*
+<div className='form-inline'>
         <label htmlFor="answerField" className='mr-2'>Answer {index + 1}: </label>
         <textarea
           rows={1}
@@ -19,12 +32,6 @@ const AnswerForm = ({ index, value, onUpdate, onDelete }) => {
           onChange={event => onUpdate(event.target.value, index)}
           value={value} 
         />
-        <div onClick={onDelete} className='float-right'>
-          <DeleteIcon />
-        </div>
+        <DeleteButton onClick={onDelete} className='float-right' />
       </div>
-    </div>
-  );
-};
-
-export default AnswerForm;
+*/

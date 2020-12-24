@@ -11,3 +11,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Components */
+
+.deleteButton:hover {
+  color: #ed1212;
+  cursor: pointer;
+}
+
+.quizCard:hover {
+  background-color: #cfe4f5;
+  cursor: pointer;
+}

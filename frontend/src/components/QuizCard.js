@@ -1,15 +1,12 @@
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteButton from './DeleteButton';
 
 const QuizCard = ({ quiz, onClick, onDelete }) => {
   
   return (
-    <div className='list-group-item' data-toggle='tooltip' data-placement='top' title='Tooltip '>
-      <div onClick={() => onClick(quiz._id)}>
-        <h5>{quiz.name}</h5>
-        <p>Id: {quiz._id}</p>
-      </div>
-      <div onClick={() => onDelete(quiz._id)} className=''>
-        <DeleteIcon />
+    <div className='list-group-item quizCard' data-toggle='tooltip' data-placement='top' title='Tooltip '>
+      <div className='d-inline-flex' onClick={() => onClick(quiz._id)}>
+        <h5 className='mr-2 align-self-baseline'>{quiz.name}</h5>
+        <DeleteButton className='mr-2 align-self-baseline' onClick={() => onDelete(quiz._id)} />
       </div>
     </div>
   );
