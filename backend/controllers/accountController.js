@@ -1,5 +1,5 @@
-const { User } = require('../models/User');
-const { accountValidator } = require('../validators/accountValidator');
+const mongoose = require('mongoose');
+const { AccountSettings } = require('../models/AccountSettings');
 
 /**
  * @param {import('express').Express} app 
@@ -9,80 +9,84 @@ const accountController = (app) => {
    * 
    */
   app.get('/account', (req, res) => {
-    User.find((err, users) => {
+    AccountSettings.find((err, accounts) => {
       if (err) {
         res.status(404).json({ error: err });
         return;
       }
-  
-      res.status(200).json({ users });
+
+      res.status(200).json({ accounts });
     });
-  })
+  });
   
   /**
    * 
    */
-  app.get('/account/:userId', (req, res) => {
-    const { userId } = req.params;
-  
-    User.findById(userId, (err, user) => {
-      if (err) {
-        res.status(400).json({ error: err });
-        return;
-      }
+  app.get('/account/:accountId', (req, res) => {
+    const { accountId } = req.params;
+    const { isGoogleId } = req.query;
 
-      if (user === null) {
-        res.status(404).json({ error: `The user with user id: ${userId} could not be found` });
-        return;
-      }
-  
-      res.status(200).json({ user });
-    });
+    if (isGoogleId) {
+      AccountSettings.findOne({ googleId: accountId }, (err, account) => {
+        if (err) {
+          res.status(500).json({ error: err });
+          return
+        }
+
+        if (account === null) {
+          res.status(404).json({ error: `The account with the google id: ${accountId} could not be found` });
+          return;
+        }
+
+        res.status(200).json({ account });
+      });
+    }
+    else {
+      AccountSettings.findById(mongoose.Types.ObjectId(accountId), (err, account) => {
+        if (err) {
+          res.status(500).json({ error: err });
+          return
+        }
+
+        if (account === null) {
+          res.status(404).json({ error: `The quiz with id: ${accountId} could not be found` });
+          return;
+        }
+
+        res.status(200).json({ account });
+      });
+    }
   });
   
   // TODO create ability to edit user
   // PUT / PATCH
-  
-  /**
-   * 
-   */
-  app.post('/account', (req, res) => {
-    const { username, email } = req.body;
-  
-    const { isValid, validationError } = accountValidator(username, email);
-  
-    if (!isValid) {
-      res.status(400).json({ error: validationError });
-      return;
-    }
-  
-    User.find({ email }, (emailErr, userWithEmail) => {
-  
-      if (emailErr) {
-        res.status(500).json({ error: 'An error occured while trying to look the user up in the database. Please try again later.' });
+  app.patch('/account/:accountId', (req, res) => {
+    const { accountId } = req.params;
+    const { theme } = req.body;
+
+    AccountSettings.updateOne({ _id: accountId }, { theme }, (err, account) => {
+      if (err) {
+        res.status(500).json({ error: err });
         return;
       }
-  
-      if (userWithEmail.length > 0) {
-        res.status(400).json({ error: `The user with the email: ${email} already exists` });
+
+      if (account === null) {
+        res.status(404).json({ error: `The account with the id ${accountId} could not be found to be updated.` });
         return;
       }
-  
-      User.find({ username }, (usernameErr, userWithUsername) => {
-        if (usernameErr) {
-          res.status(500).json({ error: 'An error occured while trying to look the user up in the database. Please try again later.' });
+
+      AccountSettings.findById(accountId, (e, updatedAccount) => {
+        if (e) {
+          res.status(500).json({ error: e });
           return;
         }
-    
-        if (userWithUsername.length > 0) {
-          res.status(400).json({ error: `The user with the username: ${username} already exists` });
+
+        if (updatedAccount === null) {
+          res.status(404).json({ error: `The account with the id ${accountId} could not be found after updating.` });
           return;
         }
-  
-        const newUser = new User({ username, email });
-        newUser.save();
-        
-        res.status(201).json({ user: newUser });
+
+        res.status(206).json({ account: updatedAccount });
       });
     });
   });
@@ -90,24 +94,53 @@ const accountController = (app) => {
   /**
    * 
    */
-  app.delete('/account/:userId', (req, res) => {
-    const { userId } = req.params;
-  
-    User.findByIdAndDelete(userId, (err, result) => {
-      console.log(err, result);
-  
+  app.post('/account', (req, res) => {
+    const { googleId, theme } = req.body;
+    const newAccount = new AccountSettings({
+      googleId: googleId,
+      theme: theme
+    });
+
+    AccountSettings.findOne({ googleId: googleId }, (err, account) => {
       if (err) {
         res.status(500).json({ error: err });
-          return;
-      }
-  
-      if (result === null) {
-        res.status(404).json({ error: `The user with the id: ${userId} does not exist.` });
         return;
       }
+
+      if (account !== null) {
+        res.status(400).json({ error: `A user with the google id ${googleId} already exists` });
+        return;
+      }
+
+      newAccount.save((e, account) => {
+        if (e) {
+          res.status(500).json({ error: e });
+          return;
+        }
   
-      res.status(204).json();
+        res.status(201).json({ account });
+      });
     });
+  });
+  
+  /**
+   * 
+   */
+  app.delete('/account/:accountId', (req, res) => {
+    const { accountId } = req.params;
+    AccountSettings.findByIdAndDelete(accountId, (err, account) => {
+      if (err) {
+        res.status(500).json({ error: err });
+        return;
+      }
+
+      if (account === null) {
+        res.status(404).json({ error: `The account with the id ${accountId} could not be found.` });
+        return;
+      }
+
+      res.status(204).json();
+    })
   });
 };
 

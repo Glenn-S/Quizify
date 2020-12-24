@@ -12,6 +12,36 @@ code {
     monospace;
 }
 
+div.dark {
+  background-color: #242524;
+  color: #fff;
+}
+
+div.dark.card-body {
+  background-color: #fff;
+  color: #000;
+}
+
+div.dark.list-group {
+  background-color: #fff;
+  color: #000;
+}
+
+hr.dark {
+  background-color: #fff;
+  color: #fff;
+}
+
+hr.light {
+  background-color: #000;
+  color: #000;
+}
+
+/* .light {
+  background-color: #fff;
+  color: #000
+} */
+
 /* Components */
 
 .deleteButton:hover {

@@ -1,5 +1,6 @@
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { useAuthState } from './AuthStateProvider';
+import { useAccountState } from './AccountProvider';
 import Home from './Home';
 import About from './About';
 import PrimaryHeader from './PrimaryHeader';
@@ -13,9 +14,11 @@ import Quiz from './Quiz';
 
 const PrimaryLayout = () => {
   const { authenticated } = useAuthState();
+  const { theme } = useAccountState();
+  console.log(theme);
   
   return (
-    <div className="d-flex flex-column min-vh-100">
+    <div className={`d-flex flex-column min-vh-100 ${theme}`}>
       <PrimaryHeader />
       <main className='flex-fill' role='main'>
         <Switch>

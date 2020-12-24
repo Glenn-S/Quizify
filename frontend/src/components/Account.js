@@ -1,15 +1,32 @@
+import { useEffect, useState } from 'react';
 import { useAuthState } from './AuthStateProvider';
+import { useAccountState } from './AccountProvider';
+import ToggleSwitch from './ToggleSwitch';
 
 const Account = () => {
   const { user } = useAuthState();
+  const { theme, dispatch } = useAccountState();
+  const [isDarkMode, setIsDarkMode] = useState(theme !== 'light' ? true : false);
 
-  // Add in settings for setting a dark mode version
+  useEffect(() => {
+    let isCurrent = true; 
+    
+    if (isCurrent) {
+      if (isDarkMode) {
+        dispatch({ type: 'DARK_MODE' });
+      } else {
+        dispatch({ type: 'LIGHT_MODE' });
+      }
+    }
+
+    return () => isCurrent = false;
+  }, [dispatch, isDarkMode]);
   
   return (
     <div className='container'>
       <h1 className='title'>Account Information</h1>
       <div className='card'>
-        <div className='card-body d-flex'>
+        <div className={`card-body d-flex ${theme}`}>
           <img src={user.imageUrl} alt='' className='p-3' />
           <div className='p-2'>
             <h4 className='card-title'>{user.name}</h4>
@@ -20,7 +37,9 @@ const Account = () => {
       </div>
 
       <h1 className='title'>Settings</h1>
-      <p>Stay Tuned</p>
+      <div className='form-control'>
+        <ToggleSwitch labelText='Dark mode' checked={isDarkMode} onChange={() => setIsDarkMode((prev) => !prev)} />
+      </div>
     </div>
   );
 };

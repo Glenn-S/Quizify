@@ -1,7 +1,10 @@
-
+import { useAccountState } from './AccountProvider';
+ 
 const About = () => {
+  const { theme } = useAccountState();
+
   return (
-    <div className='jumbotron'>
+    <div className={`jumbotron ${theme}`}>
       <div className='container'>
         <h1 className='display-3'>What is Quizify?</h1>
         <p className='lead'>

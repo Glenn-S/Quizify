@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuthState } from './AuthStateProvider';
+import { useAccountState } from './AccountProvider';
 import Loader from './Loader';
 import QuizCard from './QuizCard';
 import axios from 'axios';
@@ -8,6 +9,7 @@ import { useHistory } from 'react-router';
 const Quizzes = () => {
   const history = useHistory();
   const { user } = useAuthState();
+  const { theme } = useAccountState();
   const [ quizList, setQuizList ] = useState({ isLoading: true, quizzes: [] });
   const [isCurrent, setIsCurrent] = useState(false);
 
@@ -54,7 +56,7 @@ const Quizzes = () => {
       {quizList.isLoading ? (
         <Loader />
       ) : (
-        <div className='list-group'>
+        <div className={`list-group ${theme}`}>
           {quizList.quizzes && quizList.quizzes.map(x => 
             <QuizCard 
               key={x._id} 

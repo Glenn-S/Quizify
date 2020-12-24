@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuthState } from './AuthStateProvider';
+import { useAccountState } from './AccountProvider';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import QuestionForm from './QuestionForm';
@@ -7,6 +8,7 @@ import InputField from './InputField';
 
 const QuizForm = () => {
   const { user } = useAuthState();
+  const { theme } = useAccountState();
   // const [isError, setIsError] = useState({ isError: false, error: {} });
   const [quizName, setQuizName] = useState('');
   const [submit, setSubmit] = useState(false);
@@ -61,7 +63,7 @@ const QuizForm = () => {
       <form onSubmit={onSubmit}>
         <div className="form-group">
           <h1 className='title'>Create Quiz</h1>
-          <hr/>
+          <hr className={`${theme}`} />
           <InputField 
             labelText='Quiz Title: ' 
             placeholder='Enter Quiz Title' 

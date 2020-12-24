@@ -1,6 +1,8 @@
 import QuizInputField from './QuizInputField';
+import { useAccountState } from './AccountProvider';
 
 const QuestionForm = ({ index, questionSet, onUpdate, onDelete }) => {
+  const { theme } = useAccountState();
 
   const onQuestionUpdate = (value) => {
     onUpdate(index, (prev) => ({...prev, question: value}));
@@ -26,7 +28,7 @@ const QuestionForm = ({ index, questionSet, onUpdate, onDelete }) => {
 
   return (
     <div className=''>
-      <hr/>
+      <hr className={`${theme}`} />
       <div className='mb-2'>
         <QuizInputField 
           labelText={`Question ${index + 1}: `} 
@@ -37,7 +39,7 @@ const QuestionForm = ({ index, questionSet, onUpdate, onDelete }) => {
         />
 
         <div className='container card mt-2'>
-          <div className='mb-2'>
+          <div className={`card-body ${theme}`}>
             {questionSet.answers.map((answer, index) =>
               <div key={index} className='mb-2 mt-2'>
                 <QuizInputField 
@@ -49,19 +51,18 @@ const QuestionForm = ({ index, questionSet, onUpdate, onDelete }) => {
                 />
               </div>
             )}
-          </div>
-
-          <div className='mb-2 d-flex'>
-            <label htmlFor='answerField'>Correct Answer: </label>
-            <div className='ml-2 select-container'>
-              <select value={questionSet.correctAnswer} onChange={(event) => updateCorrectAnswer(Number.parseInt(event.target.value))}>
-                {questionSet.answers.map((_, i) =>
-                  <option key={i} value={i}>Answer {i+1}</option>
-                )}
-              </select>
+            <div className='d-flex'>
+              <label htmlFor='answerField'>Correct Answer: </label>
+              <div className='ml-2 select-container'>
+                <select value={questionSet.correctAnswer} onChange={(event) => updateCorrectAnswer(Number.parseInt(event.target.value))}>
+                  {questionSet.answers.map((_, i) =>
+                    <option key={i} value={i}>Answer {i+1}</option>
+                  )}
+                </select>
+              </div>
             </div>
           </div>
-          
+
           <div className='btn btn-primary mt-2 mb-2' onClick={addAnswer}>Add Answer</div>
         </div>
 

@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const { Quiz } = require('../models/Quiz');  
 
 // TODO add in the question validator.
@@ -46,7 +47,7 @@ const quizController = (app) => {
       });
     }
     else {
-      Quiz.findById(quizId, (err, quiz) => {
+      Quiz.findById(mongoose.Types.ObjectId(quizId), (err, quiz) => {
         if (err) {
           res.status(500).json({ error: err });
           return
