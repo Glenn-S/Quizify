@@ -1,10 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useAccountState } from './AccountProvider';
 import Loader from './Loader';
 import axios from 'axios';
+import ExportToPDFButton from './ExportToPDF';
 
 const Quiz = ({ quizId }) => {
   const [ quiz, setQuiz ] = useState({ isLoading: true, quizFields: {} });
   const [isCurrent, setIsCurrent] = useState(false);
+  const { theme } = useAccountState();
+  const domRef = useRef(null);
 
   const { name, questions } = quiz.quizFields;
 
@@ -12,7 +16,7 @@ const Quiz = ({ quizId }) => {
     setIsCurrent(true);
 
     if (quizId) {
-      axios.get(`http://localhost:4000/quiz/${quizId}`)
+      axios.get(`${process.env.REACT_APP_API_BASE_URL}/quiz/${quizId}`)
         .then((res) => {
           // give a bit of loading feedback
           if (isCurrent) {
@@ -36,9 +40,9 @@ const Quiz = ({ quizId }) => {
         {quiz.isLoading ? (
           <Loader />
         ) : (
-          <div className='list-group'>
+          <div ref={domRef}>
             {quiz && (
-              <div>
+              <div className={`card-body ${theme}`}>
                 <h1 className='ml-3 mt-3'>Name: {name}</h1>
                 <hr/>
                 {questions.map((question, i) => 
@@ -57,8 +61,17 @@ const Quiz = ({ quizId }) => {
           </div>
         )}
       </div>
+      <ExportToPDFButton 
+        filename={`quizify-${quizId}`} 
+        domRef={domRef}
+        className='btn btn-outline-primary float-right mt-2'
+      >
+        Export to PDF
+      </ExportToPDFButton>
     </div>
   );
 };
 
 export default Quiz;
+
+//<div className='btn btn-outline-primary float-right mt-2' onClick={() => {}}>Export to PDF</div>

@@ -20,7 +20,7 @@ const QuizForm = () => {
       if (user && user.googleId) {
 
         axios.post(
-          `http://localhost:4000/quiz`, 
+          `${process.env.REACT_APP_API_BASE_URL}/quiz`, 
           { name: quizName, googleId: user.googleId, questions: questions },
           {
             headers: {
@@ -28,9 +28,6 @@ const QuizForm = () => {
             }
           })
           .then((res) => {
-            // give a bit of loading feedback
-            console.log(res);
-            // redirect?
             setQuizName('');
             history.push('/quizzes');
           })
@@ -57,6 +54,8 @@ const QuizForm = () => {
   const onDelete = (index) => setQuestions((prev) => prev.filter((_, i) => i !== index));
 
   const onUpdate = (index, fn) => setQuestions((prev) => prev.map((x, i) => i === index ? fn(prev[index]) : x));
+
+  // TODO add form validators (bootstrap) gs
 
   return (
     <div className='container mt-5'>
@@ -87,9 +86,10 @@ const QuizForm = () => {
             className='btn btn-primary mt-2' 
             onClick={() => setQuestions((prev) => [...prev, {question: '', answers: [''], correctAnswer: 0 }])}
           >Add Question</div>
-
         </div>
-        <button type="submit" onClick={(event) => onSubmit(event)} className="btn btn-outline-primary float-right">Publish</button>
+        
+        <button type="submit" onClick={() => history.push('/quizzes')} className="btn btn-outline-primary float-right">Cancel</button>
+        <button type="submit" onClick={(event) => onSubmit(event)} className="btn btn-outline-primary float-right mr-2">Publish</button>
       </form>
     </div>
   );

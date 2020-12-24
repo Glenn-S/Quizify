@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuthState } from './AuthStateProvider';
 import { useAccountState } from './AccountProvider';
 import ToggleSwitch from './ToggleSwitch';
+import axios from 'axios';
 
 const Account = () => {
   const { user } = useAuthState();
@@ -10,17 +11,36 @@ const Account = () => {
 
   useEffect(() => {
     let isCurrent = true; 
+
+    const updateAccount = async (theme) => {
+      try {
+        return axios.patch(`${process.env.REACT_APP_API_BASE_URL}/account/${user.userId}?isGoogleId=true`, { theme: theme });
+      } catch (e) {
+        console.log(e);
+        // TODO deal with at some point
+      }
+    };
     
     if (isCurrent) {
-      if (isDarkMode) {
-        dispatch({ type: 'DARK_MODE' });
-      } else {
-        dispatch({ type: 'LIGHT_MODE' });
+      if (user) {
+        if (isDarkMode) {
+          dispatch({ type: 'DARK_MODE' });
+          updateAccount('dark')
+            .catch((reason) => {
+              console.log(reason);
+            });
+        } else {
+          dispatch({ type: 'LIGHT_MODE' });
+          updateAccount('light')
+            .catch((reason) => {
+              console.log(reason);
+            });
+        }
       }
     }
 
     return () => isCurrent = false;
-  }, [dispatch, isDarkMode]);
+  }, [dispatch, isDarkMode, user]);
   
   return (
     <div className='container'>

@@ -15,7 +15,6 @@ import Quiz from './Quiz';
 const PrimaryLayout = () => {
   const { authenticated } = useAuthState();
   const { theme } = useAccountState();
-  console.log(theme);
   
   return (
     <div className={`d-flex flex-column min-vh-100 ${theme}`}>
